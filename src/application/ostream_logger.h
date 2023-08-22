@@ -1,13 +1,11 @@
 #pragma once
 
+#include <src/interface/logger.h>
 #include <ostream>
-#include <string_view>
-
-#include <src/components/interface.h>
 
 namespace application
 {
-    class OStreamLogger : public components::Logger
+    class OStreamLogger : public emulator::Logger
     {
     public:
         OStreamLogger(std::ostream &out);

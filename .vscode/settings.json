@@ -52,6 +52,7 @@
         "optional": "cpp",
         "variant": "cpp",
         "map": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "cinttypes": "cpp"
     }
 }

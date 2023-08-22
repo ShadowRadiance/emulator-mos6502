@@ -7,15 +7,15 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB AddressModes src/components/addressing/*.cpp)
-file(GLOB Operations src/components/operations/*.cpp)
+file(GLOB AddressModes src/mos6502/addressing/*.cpp)
+file(GLOB Operations src/mos6502/operations/*.cpp)
 
 add_executable(Emu6502 src/main.cpp 
     src/application/ostream_logger.cpp
-    src/components/mos6502.cpp
-    src/components/mos6502_opcode_decoder.cpp
-    src/components/opcode_parser.cpp
-    src/components/writable_memory.cpp
+    src/application/ram.cpp
+    src/mos6502/cpu.cpp
+    src/mos6502/mos6502_opcode_decoder.cpp
+    src/mos6502/opcode_parser.cpp
     ${AddressModes}
     ${Operations}
     )

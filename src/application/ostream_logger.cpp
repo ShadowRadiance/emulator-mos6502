@@ -1,4 +1,4 @@
-#include "./ostream_logger.h"
+#include "ostream_logger.h"
 
 namespace application
 {

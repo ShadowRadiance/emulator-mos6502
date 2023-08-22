@@ -12,7 +12,8 @@ int main(int argc, char const *argv[])
     components::WritableMemory ram;
     components::MOS6502 cpu(ram, logger);
 
-    ram[0x0000] = 0x06;
+    ram[0x0000] = 0xA9; // LDA #
+    ram[0x0001] = 0x42; // LDA #$42
 
     while (cpu.tick())
         /* nop */;
