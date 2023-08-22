@@ -30,7 +30,7 @@ namespace components
 
         void ASL::execute()
         {
-            logger().log(std::format("ASL with {}", mode().code()));
+            logger().log(name());
             return;
         }
     } // namespace operations

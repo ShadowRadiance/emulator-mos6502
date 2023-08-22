@@ -13,7 +13,7 @@ namespace components
 
         void ADC::execute()
         {
-            logger().log("ADC");
+            logger().log(name());
             return;
         }
     } // namespace operations

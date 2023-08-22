@@ -1,6 +1,7 @@
 #pragma once
 
 #include <set>
+#include <string>
 #include <src/components/interface.h>
 
 namespace components
@@ -11,11 +12,12 @@ namespace components
         {
         public:
             Base(CPU &cpu, Logger &logger, AddressMode &mode);
+            std::string name() const override;
 
         protected:
-            CPU &cpu();
-            Logger &logger();
-            AddressMode &mode();
+            CPU &cpu() const;
+            Logger &logger() const;
+            AddressMode &mode() const;
 
             virtual std::set<size_t> allowedModeTypeIdHashCodes();
             std::set<size_t> allModeTypeIdHashCodes();

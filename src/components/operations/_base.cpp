@@ -1,6 +1,7 @@
 #include "./_base.h"
 
 #include <typeinfo>
+#include <format>
 #include <src/components/address_modes.h>
 
 namespace components
@@ -10,9 +11,14 @@ namespace components
         Base::Base(CPU &cpu, Logger &logger, AddressMode &mode)
             : cpu_(cpu), logger_(logger), mode_(mode) {}
 
-        CPU &Base::cpu() { return cpu_; }
-        Logger &Base::logger() { return logger_; }
-        AddressMode &Base::mode() { return mode_; }
+        CPU &Base::cpu() const { return cpu_; }
+        Logger &Base::logger() const { return logger_; }
+        AddressMode &Base::mode() const { return mode_; }
+
+        std::string Base::name() const
+        {
+            return std::format("ASL {}", mode().code());
+        }
 
         std::set<size_t> Base::allowedModeTypeIdHashCodes()
         {

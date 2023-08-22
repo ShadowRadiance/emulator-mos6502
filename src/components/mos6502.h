@@ -2,11 +2,13 @@
 
 #include <cstdint>
 #include <memory>
+#include <map>
 
 #include <src/components/interface.h>
 
 namespace components
 {
+
     class MOS6502 : public CPU
     {
     public:
@@ -15,6 +17,8 @@ namespace components
             Logger &logger);
         void reset();
         bool tick();
+
+        static std::map<std::string, std::unique_ptr<AddressMode>> addressModes;
 
     private:
         Logger &logger_;

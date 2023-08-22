@@ -34,6 +34,7 @@ namespace components
 
     struct Operation
     {
+        virtual std::string name() const = 0;
         virtual void execute() = 0;
         virtual ~Operation() = default;
     };

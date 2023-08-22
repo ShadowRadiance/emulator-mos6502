@@ -1,7 +1,6 @@
 #include "./mos6502.h"
 
 #include <format>
-#include <map>
 #include <stdexcept>
 
 #include <src/components/opcode_parser.h>
@@ -31,7 +30,7 @@ namespace components
         return map;
     }
 
-    std::map<std::string, std::unique_ptr<AddressMode>> addressModes = init();
+    std::map<std::string, std::unique_ptr<AddressMode>> MOS6502::addressModes = init();
 
     std::unique_ptr<Operation> MOS6502::decode(uint8_t opcode)
     {
@@ -40,15 +39,15 @@ namespace components
         case 0x00:
             return std::make_unique<operations::BRK>(*this, logger_);
         case 0x06:
-            return std::make_unique<operations::ASL>(*this, logger_, *addressModes["zp"]);
+            return std::make_unique<operations::ASL>(*this, logger_, *MOS6502::addressModes["zp"]);
         case 0x0A:
-            return std::make_unique<operations::ASL>(*this, logger_, *addressModes["A"]);
+            return std::make_unique<operations::ASL>(*this, logger_, *MOS6502::addressModes["A"]);
         case 0x0E:
-            return std::make_unique<operations::ASL>(*this, logger_, *addressModes["a"]);
+            return std::make_unique<operations::ASL>(*this, logger_, *MOS6502::addressModes["a"]);
         case 0x16:
-            return std::make_unique<operations::ASL>(*this, logger_, *addressModes["zp,x"]);
+            return std::make_unique<operations::ASL>(*this, logger_, *MOS6502::addressModes["zp,x"]);
         case 0x1E:
-            return std::make_unique<operations::ASL>(*this, logger_, *addressModes["a,x"]);
+            return std::make_unique<operations::ASL>(*this, logger_, *MOS6502::addressModes["a,x"]);
         case 0xEA:
             return std::make_unique<operations::NOP>(*this, logger_);
         default:
