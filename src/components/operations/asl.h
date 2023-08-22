@@ -1,20 +1,19 @@
 #pragma once
 
 #include <src/components/interface.h>
+#include "_base.h"
 
 namespace components
 {
     namespace operations
     {
-        class ASL : public Operation
+        class ASL : public Base
         {
         public:
-            ASL(Logger &logger);
+            ASL(CPU &cpu, Logger &logger, AddressMode &addressMode);
 
-            void execute();
-
-        private:
-            Logger &logger_;
+            void execute() override;
+            std::set<size_t> allowedModeTypeIdHashCodes() override;
         };
     } // namespace operations
 

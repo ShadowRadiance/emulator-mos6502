@@ -8,8 +8,10 @@ namespace components
     {
         class ZeroPageXIndirect : public AddressMode
         {
-            uint16_t resolve_address();
-            uint8_t resolve_value();
+            std::string name() const override;
+            std::string code() const override;
+            uint16_t resolve_address() const override;
+            uint8_t resolve_value() const override;
         };
 
     } // namespace addressing

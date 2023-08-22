@@ -9,9 +9,9 @@ namespace components
         class NOP : public Operation
         {
         public:
-            NOP(Logger &logger);
+            NOP(CPU &cpu, Logger &logger);
 
-            void execute();
+            void execute() override;
 
         private:
             Logger &logger_;

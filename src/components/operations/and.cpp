@@ -4,7 +4,7 @@ namespace components
 {
     namespace operations
     {
-        AND::AND(Logger &logger) : logger_(logger) {}
+        AND::AND(CPU &cpu, Logger &logger) : logger_(logger) {}
 
         void AND::execute()
         {

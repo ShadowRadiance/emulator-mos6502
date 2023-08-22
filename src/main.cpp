@@ -12,7 +12,7 @@ int main(int argc, char const *argv[])
     components::WritableMemory ram;
     components::MOS6502 cpu(ram, logger);
 
-    ram[0x0000] = 
+    ram[0x0000] = 0x06;
 
     while (cpu.tick())
         /* nop */;

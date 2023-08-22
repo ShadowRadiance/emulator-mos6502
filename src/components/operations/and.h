@@ -9,9 +9,9 @@ namespace components
         class AND : public Operation
         {
         public:
-            AND(Logger &logger);
+            AND(CPU &cpu, Logger &logger);
 
-            void execute();
+            void execute() override;
 
         private:
             Logger &logger_;

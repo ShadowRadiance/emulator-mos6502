@@ -13,9 +13,9 @@ file(GLOB Operations src/components/operations/*.cpp)
 add_executable(Emu6502 src/main.cpp 
     src/application/ostream_logger.cpp
     src/components/mos6502.cpp
-    src/components/writable_memory.cpp
-    src/components/opcode_decoder.cpp
+    src/components/mos6502_opcode_decoder.cpp
     src/components/opcode_parser.cpp
+    src/components/writable_memory.cpp
     ${AddressModes}
     ${Operations}
     )

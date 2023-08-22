@@ -4,7 +4,7 @@ namespace components
 {
     namespace operations
     {
-        NOP::NOP(Logger &logger) : logger_(logger) {}
+        NOP::NOP(CPU &cpu, Logger &logger) : logger_(logger) {}
 
         void NOP::execute()
         {

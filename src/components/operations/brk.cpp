@@ -4,7 +4,7 @@ namespace components
 {
     namespace operations
     {
-        BRK::BRK(Logger &logger) : logger_(logger) {}
+        BRK::BRK(CPU &cpu, Logger &logger) : logger_(logger) {}
 
         void BRK::execute()
         {

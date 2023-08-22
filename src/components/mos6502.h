@@ -56,5 +56,6 @@ namespace components
         void write_word(uint16_t address, uint16_t word);
 
         std::unique_ptr<Operation> decode(uint8_t opcode);
+        std::unique_ptr<Operation> lookup_by_parser(uint8_t opcode);
     };
 } // namespace component

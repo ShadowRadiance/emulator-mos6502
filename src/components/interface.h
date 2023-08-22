@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string_view>
+#include <string>
 
 namespace components
 {
@@ -25,8 +26,10 @@ namespace components
 
     struct AddressMode
     {
-        virtual uint16_t resolve_address() = 0;
-        virtual uint8_t resolve_value() = 0;
+        virtual std::string name() const = 0;
+        virtual std::string code() const = 0;
+        virtual uint16_t resolve_address() const = 0;
+        virtual uint8_t resolve_value() const = 0;
     };
 
     struct Operation

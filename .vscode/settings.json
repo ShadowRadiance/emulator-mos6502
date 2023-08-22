@@ -50,6 +50,8 @@
         "charconv": "cpp",
         "ctime": "cpp",
         "optional": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "map": "cpp",
+        "set": "cpp"
     }
 }

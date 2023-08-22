@@ -4,7 +4,9 @@ namespace components
 {
     namespace addressing
     {
-
-    } // namespace addressing
-
-} // namespace components
+        std::string ZeroPageIndirectY::name() const { return "ZeroPageIndirectY"; };
+        std::string ZeroPageIndirectY::code() const { return "(zp),y"; };
+        uint16_t ZeroPageIndirectY::resolve_address() const { return 0; };
+        uint8_t ZeroPageIndirectY::resolve_value() const { return 0; };
+    }
+}

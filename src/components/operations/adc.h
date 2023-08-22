@@ -1,21 +1,18 @@
 #pragma once
 
 #include <src/components/interface.h>
+#include "_base.h"
 
 namespace components
 {
     namespace operations
     {
-        class ADC : public Operation
+        class ADC : public Base
         {
         public:
-            ADC(Logger &logger, AddressMode &mode);
+            ADC(CPU &cpu, Logger &logger, AddressMode &mode);
 
-            void execute();
-
-        private:
-            Logger &logger_;
-            AddressMode &mode_;
+            void execute() override;
         };
     } // namespace operations
 

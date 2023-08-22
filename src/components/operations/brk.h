@@ -9,9 +9,9 @@ namespace components
         class BRK : public Operation
         {
         public:
-            BRK(Logger &logger);
+            BRK(CPU& cpu, Logger &logger);
 
-            void execute();
+            void execute() override;
 
         private:
             Logger &logger_;
