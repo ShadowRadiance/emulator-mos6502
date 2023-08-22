@@ -23,9 +23,9 @@ namespace components
     bool MOS6502::tick()
     {
         uint8_t opcode = fetch_pc_byte();
-        memfn operation = decode(opcode);
+        std::unique_ptr<Operation> operation = decode(opcode);
 
-        (this->*operation)();
+        operation->execute();
 
         if (cycles > 10)
             return false;
@@ -98,17 +98,6 @@ namespace components
 #endif
         write_byte(address, lo_byte);
         write_byte(address + 1, hi_byte);
-    }
-
-    MOS6502::memfn MOS6502::decode(uint8_t opcode)
-    {
-        return &MOS6502::nop;
-    }
-
-    void MOS6502::nop()
-    {
-        logger_.log("NOP");
-        return;
     }
 }
 

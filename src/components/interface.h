@@ -29,4 +29,10 @@ namespace components
         virtual uint8_t resolve_value() = 0;
     };
 
+    struct Operation
+    {
+        virtual void execute() = 0;
+        virtual ~Operation() = default;
+    };
+
 }

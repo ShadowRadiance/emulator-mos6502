@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 
 #include <src/components/interface.h>
 
@@ -54,10 +55,6 @@ namespace components
         uint16_t read_word(uint16_t address);
         void write_word(uint16_t address, uint16_t word);
 
-        typedef void (MOS6502::*memfn)();
-
-        memfn decode(uint8_t opcode);
-
-        void nop();
+        std::unique_ptr<Operation> decode(uint8_t opcode);
     };
 } // namespace component

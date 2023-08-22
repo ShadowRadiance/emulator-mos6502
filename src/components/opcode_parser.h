@@ -6,6 +6,7 @@ namespace components
 {
     class OpCodeParser
     {
+    public:
         OpCodeParser(uint8_t opcode);
 
         union
@@ -17,6 +18,6 @@ namespace components
                 uint8_t mode : 3;
                 uint8_t suffix : 2;
             };
-        } opcode_parser;
+        };
     };
 }

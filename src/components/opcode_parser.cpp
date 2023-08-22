@@ -4,6 +4,7 @@ namespace components
 {
     OpCodeParser::OpCodeParser(uint8_t opcode)
     {
-        opcode_parser.code = opcode;
+        code = opcode;
     }
+
 }
