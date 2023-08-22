@@ -12,6 +12,8 @@ int main(int argc, char const *argv[])
     components::WritableMemory ram;
     components::MOS6502 cpu(ram, logger);
 
+    ram[0x0000] = 
+
     while (cpu.tick())
         /* nop */;
 
