@@ -15,10 +15,9 @@ add_executable(Emu6502 src/main.cpp
     src/application/ram.cpp
     src/mos6502/cpu.cpp
     src/mos6502/mos6502_opcode_decoder.cpp
-    src/mos6502/opcode_parser.cpp
     ${AddressModes}
     ${Operations}
-    )
+)
 
 configure_file(src/version.h.in version.h)
 target_include_directories(Emu6502 

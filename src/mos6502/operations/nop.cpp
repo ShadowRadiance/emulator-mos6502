@@ -1,17 +1,20 @@
-#include "./nop.h"
+#include "nop.h"
 
-#include <src/components/address_modes.h>
-#include <src/components/mos6502.h>
+#include <format>
+#include <src/mos6502/addressing/modes.h>
 #include <typeinfo>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
-    NOP::NOP(CPU &cpu, Logger &logger) : Base(cpu, logger, *MOS6502::addressModes["i"]) {}
+    NOP::NOP(mos6502::CPU &cpu, emulator::Logger &logger) : Base(cpu, logger, "i") {}
 
+    std::string NOP::name() const {
+      return "NOP";
+    }
     void NOP::execute() {
-      logger().log(name());
+      logger().log(std::format("{} {}", name(), mode()));
       return;
     }
   } // namespace operations
 
-} // namespace components
+} // namespace mos6502

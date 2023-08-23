@@ -1,7 +1,7 @@
 #pragma once
 
 #include "operations/adc.h"
-// #include "operations/and.h"
+#include "operations/and.h"
 #include "operations/asl.h"
 // #include "operations/bcc.h"
 // #include "operations/bcs.h"

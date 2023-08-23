@@ -2,18 +2,20 @@
 
 #include "_base.h"
 
-#include <src/components/interface.h>
+#include <src/emulator/logger.h>
+#include <src/mos6502/cpu.h>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
     class ASL : public Base
     {
     public:
-      ASL(CPU &cpu, Logger &logger, AddressMode &mode);
+      ASL(mos6502::CPU &cpu, emulator::Logger &logger, std::string mode);
 
+      std::string name() const;
       void execute() override;
-      std::set<size_t> allowedModeTypeIdHashCodes() override;
+      // std::set<size_t> allowedModeTypeIdHashCodes() override;
     };
   } // namespace operations
 
-} // namespace components
+} // namespace mos6502

@@ -1,16 +1,20 @@
-#include "./and.h"
+#include "and.h"
 
-#include <src/components/address_modes.h>
+#include <format>
+#include <src/mos6502/addressing/modes.h>
 #include <typeinfo>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
-    AND::AND(CPU &cpu, Logger &logger, AddressMode &mode) : Base(cpu, logger, mode) {}
+    AND::AND(mos6502::CPU &cpu, emulator::Logger &logger, std::string mode) : Base(cpu, logger, mode) {}
 
+    std::string AND::name() const {
+      return "AND";
+    }
     void AND::execute() {
-      logger().log(name());
+      logger().log(std::format("{} {}", name(), mode()));
       return;
     }
   } // namespace operations
 
-} // namespace components
+} // namespace mos6502

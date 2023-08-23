@@ -6,6 +6,7 @@
 #include <src/emulator/cpu.h>
 #include <src/emulator/logger.h>
 #include <src/emulator/memory.h>
+#include <string>
 
 namespace mos6502 {
   class CPU : public emulator::CPU

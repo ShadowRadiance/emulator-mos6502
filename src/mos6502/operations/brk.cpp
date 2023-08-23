@@ -1,17 +1,21 @@
-#include "./brk.h"
+#include "brk.h"
 
-#include <src/components/address_modes.h>
-#include <src/components/mos6502.h>
+#include <format>
+#include <src/mos6502/addressing/modes.h>
+#include <src/mos6502/cpu.h>
 #include <typeinfo>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
-    BRK::BRK(CPU &cpu, Logger &logger) : Base(cpu, logger, *MOS6502::addressModes["i"]) {}
+    BRK::BRK(mos6502::CPU &cpu, emulator::Logger &logger) : Base(cpu, logger, "i") {}
 
+    std::string BRK::name() const {
+      return "BRK";
+    }
     void BRK::execute() {
-      logger().log(name());
+      logger().log(std::format("{} {}", name(), mode()));
       return;
     }
   } // namespace operations
 
-} // namespace components
+} // namespace mos6502

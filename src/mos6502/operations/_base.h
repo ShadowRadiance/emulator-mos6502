@@ -11,7 +11,7 @@ namespace mos6502 {
     {
     public:
       Base(mos6502::CPU &cpu, emulator::Logger &logger, std::string mode);
-      std::string name() const;
+      virtual std::string name() const = 0;
       virtual void execute() = 0;
       virtual ~Base() = default;
 

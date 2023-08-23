@@ -1,9 +1,10 @@
-#include "./cpu.h"
+#include "cpu.h"
 
 #include <format>
+#include <src/mos6502/operations.h>
 
 namespace mos6502 {
-  CPU::CPU(RandomAccessMemory &ram, Logger &logger) : ram_(ram), logger_(logger) {
+  CPU::CPU(emulator::WritableMemory &mem, emulator::Logger &logger) : mem_(mem), logger_(logger) {
     reset();
   }
 
@@ -16,16 +17,30 @@ namespace mos6502 {
 
   bool CPU::tick() {
     uint8_t opcode = fetch_pc_byte();
-    std::unique_ptr<Operation> operation = decode(opcode);
+    Operation operation = decode(opcode);
 
-    operation->execute();
+    std::unique_ptr<mos6502::operations::Base> op;
+    if (operation.instruction == "ADC") {
+      op.reset(new mos6502::operations::ADC(*this, logger_, operation.addressMode));
+    } else if (operation.instruction == "AND") {
+      op.reset(new mos6502::operations::AND(*this, logger_, operation.addressMode));
+    } else if (operation.instruction == "ASL") {
+      op.reset(new mos6502::operations::ASL(*this, logger_, operation.addressMode));
+    } else if (operation.instruction == "BRK") {
+      op.reset(new mos6502::operations::BRK(*this, logger_));
+    } else if (operation.instruction == "LDA") {
+      op.reset(new mos6502::operations::LDA(*this, logger_, operation.addressMode));
+    } else if (operation.instruction == "NOP") {
+      op.reset(new mos6502::operations::NOP(*this, logger_));
+    }
 
+    if (op) {
+      op->execute();
+    }
     if (cycles > 10) {
       return false;
     }
-
     logger_.log(std::format("Cycles {0}", cycles));
-
     return true;
   }
 
@@ -51,14 +66,14 @@ namespace mos6502 {
 
   uint8_t CPU::read_byte(uint16_t address) {
     cycles++;
-    uint8_t byte = ram_[address];
+    uint8_t byte = mem_[address];
     logger_.log(std::format("READ {0} from {1} (1c)", byte, address));
-    return ram_[address];
+    return mem_[address];
   }
 
   void CPU::write_byte(uint16_t address, uint8_t byte) {
     cycles++;
-    ram_[address] = byte;
+    mem_[address] = byte;
     logger_.log(std::format("WROTE {0} from {1} (1c)", byte, address));
   }
 
@@ -87,27 +102,27 @@ namespace mos6502 {
     write_byte(address + 1, hi_byte);
   }
 
-  std::map<std::string, std::unique_ptr<AddressMode>> init() {
-    std::map<std::string, std::unique_ptr<AddressMode>> map;
+  // std::map<std::string, std::unique_ptr<AddressMode>> init() {
+  //   std::map<std::string, std::unique_ptr<AddressMode>> map;
 
-    map["(a)"] = std::make_unique<addressing::AbsoluteIndirect>();
-    map["a,x"] = std::make_unique<addressing::AbsoluteX>();
-    map["a,y"] = std::make_unique<addressing::AbsoluteY>();
-    map["a"] = std::make_unique<addressing::Absolute>();
-    map["A"] = std::make_unique<addressing::Accumulator>();
-    map["#"] = std::make_unique<addressing::Immediate>();
-    map["i"] = std::make_unique<addressing::Implied>();
-    map["r"] = std::make_unique<addressing::Relative>();
-    map["(zp),y"] = std::make_unique<addressing::ZeroPageIndirectY>();
-    map["(zp,x)"] = std::make_unique<addressing::ZeroPageXIndirect>();
-    map["zp,x"] = std::make_unique<addressing::ZeroPageX>();
-    map["zp,y"] = std::make_unique<addressing::ZeroPageY>();
-    map["zp"] = std::make_unique<addressing::ZeroPage>();
+  //   map["(a)"] = std::make_unique<addressing::AbsoluteIndirect>();
+  //   map["a,x"] = std::make_unique<addressing::AbsoluteX>();
+  //   map["a,y"] = std::make_unique<addressing::AbsoluteY>();
+  //   map["a"] = std::make_unique<addressing::Absolute>();
+  //   map["A"] = std::make_unique<addressing::Accumulator>();
+  //   map["#"] = std::make_unique<addressing::Immediate>();
+  //   map["i"] = std::make_unique<addressing::Implied>();
+  //   map["r"] = std::make_unique<addressing::Relative>();
+  //   map["(zp),y"] = std::make_unique<addressing::ZeroPageIndirectY>();
+  //   map["(zp,x)"] = std::make_unique<addressing::ZeroPageXIndirect>();
+  //   map["zp,x"] = std::make_unique<addressing::ZeroPageX>();
+  //   map["zp,y"] = std::make_unique<addressing::ZeroPageY>();
+  //   map["zp"] = std::make_unique<addressing::ZeroPage>();
 
-    return map;
-  }
+  //   return map;
+  // }
 
-  std::map<std::string, std::unique_ptr<AddressMode>> CPU::addressModes = init();
+  // std::map<std::string, std::unique_ptr<AddressMode>> CPU::addressModes = init();
 
 }// namespace mos6502
 

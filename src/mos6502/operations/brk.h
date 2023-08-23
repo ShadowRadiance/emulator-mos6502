@@ -2,17 +2,19 @@
 
 #include "_base.h"
 
-#include <src/components/interface.h>
+#include <src/emulator/logger.h>
+#include <src/mos6502/cpu.h>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
     class BRK : public Base
     {
     public:
-      BRK(CPU &cpu, Logger &logger);
+      BRK(mos6502::CPU &cpu, emulator::Logger &logger);
 
+      std::string name() const;
       void execute() override;
     };
   } // namespace operations
 
-} // namespace components
+} // namespace mos6502

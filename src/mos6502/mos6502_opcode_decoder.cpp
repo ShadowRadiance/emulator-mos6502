@@ -26,9 +26,9 @@ namespace mos6502 {
       uint8_t code;
       struct
       {
-        uint8_t prefix :3;
-        uint8_t mode   :3;
-        uint8_t suffix :2;
+        uint8_t suffix :2; // bits 0, 1
+        uint8_t mode   :3; // bits 2,3,4
+        uint8_t prefix :3; // bits 5,6,7
       };
     };
   };
@@ -45,6 +45,7 @@ namespace mos6502 {
     {0b110, "CPY"},
     {0b111, "CPX"},
   };
+
   ModeTable modeTable00{
     {0b000, "#"},
     {0b001, "zp"},
@@ -63,6 +64,7 @@ namespace mos6502 {
     {0b110, "CMP"},
     {0b111, "SBC"},
   };
+
   ModeTable modeTable01{
     {0b000, "(zp,x)"},
     {0b001, "zp"},
@@ -123,43 +125,43 @@ namespace mos6502 {
     std::string inst = instructionIt->second;
     std::string mode = addressModeIt->second;
 
-        // handle the weirdness
+    // handle the weirdness
 
     switch (opcode) {
-    case 0b100'010'01: {
+    case 0b100'010'01: /* $89 STA # */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} (STA #)", opcode));
     }
-    case 0b000'000'10:
-    case 0b001'000'10:
-    case 0b010'000'10:
-    case 0b011'000'10:
-    case 0b100'000'10:
-    case 0b110'000'10:
-    case 0b111'000'10: {
+    case 0b000'000'10: /* $02 ASL # */
+    case 0b001'000'10: /* $22 ROL # */
+    case 0b010'000'10: /* $42 LSR # */
+    case 0b011'000'10: /* $62 ROR # */
+    case 0b100'000'10: /* $82 STX # */
+    case 0b110'000'10: /* $C2 DEC # */
+    case 0b111'000'10: /* $E2 INC # */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} ({} #)", opcode, inst));
     }
-    case 0b100'010'10:
-    case 0b101'010'10:
-    case 0b110'010'10:
-    case 0b111'010'10: {
+    case 0b100'010'10: /* $8A STX A */
+    case 0b101'010'10: /* $AA LDX A */
+    case 0b110'010'10: /* $CA DEC A */
+    case 0b111'010'10: /* $EA INC A */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} ({} A)", opcode, inst));
     }
-    case 0b100'111'10: {
+    case 0b100'111'10: /* $9E STX a,x */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} (STX a,x)", opcode));
     }
-    case 0b001'000'00:
-    case 0b100'000'00: {
+    case 0b001'000'00: /* $20 BIT # */
+    case 0b100'000'00: /* $80 STY # */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} ({} #)", opcode, inst));
     }
-    case 0b001'101'00:
-    case 0b110'101'00:
-    case 0b111'101'00: {
+    case 0b001'101'00: /* $34 BIT zp,x */
+    case 0b110'101'00: /* $D4 CPY zp,x */
+    case 0b111'101'00: /* $F4 CPX zp,x */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} ({} zp,x)", opcode, inst));
     }
-    case 0b001'111'00:
-    case 0b100'111'00:
-    case 0b110'111'00:
-    case 0b111'111'00: {
+    case 0b001'111'00: /* $3C BIT a,x */
+    case 0b100'111'00: /* $9C STY a,x */
+    case 0b110'111'00: /* $DC CPY a,x */
+    case 0b111'111'00: /* $FC CPX a,x */ {
       throw std::invalid_argument(std::format("Invalid Opcode ${:02x} ({} a,x)", opcode, inst));
     }
     }
