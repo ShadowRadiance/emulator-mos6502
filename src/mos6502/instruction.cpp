@@ -5,6 +5,7 @@
 #include <src/mos6502/cpu.h>
 
 namespace mos6502 {
+  const uint16_t StackBase = 0x0100;
 
   Instruction::Instruction(std::string_view name, MemFn memfn) : name_(name), memfn_(memfn) {}
 
@@ -153,12 +154,54 @@ namespace mos6502 {
 #pragma endregion STACK
 
 #pragma region INCREMENT, DECREMENT
-  void Instruction::Dec(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dec(const AddressMode &mode, CPU &cpu) const {
+    // Decrement element at address by 1
+    uint16_t address = mode.address(cpu);
+    uint8_t value = cpu.read_byte(address);
+    value--;
+    cpu.write_byte(address, value);
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {
+    // Decrement X by 1
+    uint8_t value = cpu.x;
+    value--;
+    cpu.x = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {
+    // Decrement Y by 1
+    uint8_t value = cpu.y;
+    value--;
+    cpu.y = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {
+    // Increment element at address by 1
+    uint16_t address = mode.address(cpu);
+    uint8_t value = cpu.read_byte(address);
+    value++;
+    cpu.write_byte(address, value);
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {
+    uint8_t value = cpu.x;
+    value++;
+    cpu.x = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {
+    uint8_t value = cpu.y;
+    value++;
+    cpu.y = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
 #pragma endregion INCREMENT, DECREMENT
 
 #pragma region ARITHMETIC
