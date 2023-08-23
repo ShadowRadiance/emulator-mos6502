@@ -17,7 +17,7 @@ namespace mos6502 {
   }
 
   void Instruction::execute(const AddressMode &addressMode, CPU &cpu) const {
-    cpu.logger().log(std::format("  Performing {} {}", name(), addressMode.code()));
+    cpu.logger().log(std::format("RESOLVED {} {}", name(), addressMode.code()));
     (this->*memfn_)(addressMode, cpu);
   }
 
@@ -55,9 +55,15 @@ namespace mos6502 {
     cpu.a = value;
     cpu.n = value >> 7;
     cpu.z = value == 0;
-    cpu.logger().log(std::format("  Performed {} #${}", name(), value));
+    cpu.logger().log(std::format("--{} WROTE ${:02x} to A register", name(), value));
   }
-  void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {
+    uint8_t value = mode.value(cpu);
+    cpu.x = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE ${:02x} to X register", name(), value));
+  }
   void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Nop(const AddressMode &mode, CPU &cpu) const {}
