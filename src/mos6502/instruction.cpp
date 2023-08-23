@@ -56,7 +56,6 @@ namespace mos6502 {
     cpu.n = value >> 7;
     cpu.z = value == 0;
     cpu.logger().log(std::format("  Performed {} #${}", name(), value));
-    cpu.logger().log("");
   }
   void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {}
