@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ostream>
-#include <src/interface/logger.h>
+#include <src/emulator/logger.h>
 
 namespace application {
   class OStreamLogger : public emulator::Logger

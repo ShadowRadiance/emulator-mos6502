@@ -1,25 +1,26 @@
-#include "./_base.h"
+#include "_base.h"
 
 #include <format>
-#include <src/components/address_modes.h>
+#include <src/mos6502/addressing/modes.h>
 #include <typeinfo>
 
-namespace components {
+namespace mos6502 {
   namespace operations {
-    Base::Base(CPU &cpu, Logger &logger, AddressMode &mode) : cpu_(cpu), logger_(logger), mode_(mode) {}
+    Base::Base(mos6502::CPU &cpu, emulator::Logger &logger, std::string mode)
+            : cpu_(cpu)
+            , logger_(logger)
+            , mode_(mode) {}
 
     CPU &Base::cpu() const {
       return cpu_;
     }
-    Logger &Base::logger() const {
+
+    emulator::Logger &Base::logger() const {
       return logger_;
     }
-    AddressMode &Base::mode() const {
-      return mode_;
-    }
 
-    std::string Base::name() const {
-      return std::format("ASL {}", mode().code());
+    std::string Base::mode() const {
+      return mode_;
     }
 
     std::set<size_t> Base::allowedModeTypeIdHashCodes() {
@@ -45,4 +46,4 @@ namespace components {
     }
 
   }// namespace operations
-}// namespace components
+}// namespace mos6502

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <src/interface/memory.h>
+#include <src/emulator/memory.h>
 
 namespace application {
   class RAM : public emulator::WritableMemory

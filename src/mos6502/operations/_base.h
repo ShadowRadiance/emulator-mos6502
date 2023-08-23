@@ -1,8 +1,8 @@
 #pragma once
 
 #include <set>
-#include <src/components/interface.h>
-#include <src/components/mos6502.h>
+#include <src/emulator/logger.h>
+#include <src/mos6502/cpu.h>
 #include <string>
 
 namespace mos6502 {
@@ -10,23 +10,23 @@ namespace mos6502 {
     class Base
     {
     public:
-      Base(MOS6502 &cpu, Logger &logger, AddressMode &mode);
+      Base(mos6502::CPU &cpu, emulator::Logger &logger, std::string mode);
       std::string name() const;
       virtual void execute() = 0;
       virtual ~Base() = default;
 
     protected:
-      MOS6502 &cpu() const;
-      Logger &logger() const;
-      AddressMode &mode() const;
+      mos6502::CPU &cpu() const;
+      emulator::Logger &logger() const;
+      std::string mode() const;
 
       virtual std::set<size_t> allowedModeTypeIdHashCodes();
       std::set<size_t> allModeTypeIdHashCodes();
 
     protected:
-      MOS6502 &cpu_;
-      Logger &logger_;
-      AddressMode &mode_;
+      mos6502::CPU &cpu_;
+      emulator::Logger &logger_;
+      std::string mode_;
     };
   } // namespace operations
 
