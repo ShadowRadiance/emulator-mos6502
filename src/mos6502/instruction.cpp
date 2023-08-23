@@ -21,36 +21,9 @@ namespace mos6502 {
     (this->*memfn_)(addressMode, cpu);
   }
 
-  void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::And(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Asl(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bit(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Brk(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Clc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cld(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cli(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Clv(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cmp(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cpx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cpy(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Dec(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Eor(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Jmp(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Jsr(const AddressMode &mode, CPU &cpu) const {}
+#pragma region LOAD, STORE, TRANSFER
   void Instruction::Lda(const AddressMode &mode, CPU &cpu) const {
+    // Load Value to A
     uint8_t value = mode.value(cpu);
     cpu.a = value;
     cpu.n = value >> 7;
@@ -58,37 +31,171 @@ namespace mos6502 {
     cpu.logger().log(std::format("--{} WROTE ${:02x} to A register", name(), value));
   }
   void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {
+    // Load Value to X
     uint8_t value = mode.value(cpu);
     cpu.x = value;
     cpu.n = value >> 7;
     cpu.z = value == 0;
     cpu.logger().log(std::format("--{} WROTE ${:02x} to X register", name(), value));
   }
-  void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Nop(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Ora(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {
+    // Load Value to Y
+    uint8_t value = mode.value(cpu);
+    cpu.y = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE ${:02x} to Y register", name(), value));
+  }
+  void Instruction::Sta(const AddressMode &mode, CPU &cpu) const {
+    // Store A to Address
+    uint16_t address = mode.address(cpu);
+    uint8_t value = cpu.a;
+    cpu.write_byte(address, value);
+    cpu.logger().log(std::format("--{} WROTE A(${:02x}) to ${:04x}", name(), value, address));
+  }
+  void Instruction::Stx(const AddressMode &mode, CPU &cpu) const {
+    // Store X to Address
+    uint16_t address = mode.address(cpu);
+    uint8_t value = cpu.x;
+    cpu.write_byte(address, value);
+    cpu.logger().log(std::format("--{} WROTE X(${:02x}) to ${:04x}", name(), value, address));
+  }
+  void Instruction::Sty(const AddressMode &mode, CPU &cpu) const {
+    // Store Y to Address
+    uint16_t address = mode.address(cpu);
+    uint8_t value = cpu.y;
+    cpu.write_byte(address, value);
+    cpu.logger().log(std::format("--{} WROTE Y(${:02x}) to ${:04x}", name(), value, address));
+  }
+  void Instruction::Tax(const AddressMode &mode, CPU &cpu) const {
+    // Transfer A to X
+    uint8_t value = cpu.a;
+    cpu.x = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE A(${:02x}) to X", name(), value));
+  }
+  void Instruction::Tay(const AddressMode &mode, CPU &cpu) const {
+    // Transfer A to Y
+    uint8_t value = cpu.a;
+    cpu.y = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE A(${:02x}) to Y", name(), value));
+  }
+  void Instruction::Tsx(const AddressMode &mode, CPU &cpu) const {
+    // Transfer S to X
+    uint8_t value = cpu.s;
+    cpu.x = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE S(${:02x}) to X", name(), value));
+  }
+  void Instruction::Txa(const AddressMode &mode, CPU &cpu) const {
+    // Transfer X to A
+    uint8_t value = cpu.x;
+    cpu.a = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE X(${:02x}) to A", name(), value));
+  }
+  void Instruction::Txs(const AddressMode &mode, CPU &cpu) const {
+    // Transfer X to S
+    uint8_t value = cpu.x;
+    cpu.s = value;
+    cpu.logger().log(std::format("--{} WROTE X(${:02x}) to S", name(), value));
+  }
+  void Instruction::Tya(const AddressMode &mode, CPU &cpu) const {
+    // Transfer Y to A
+    uint8_t value = cpu.y;
+    cpu.a = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("--{} WROTE Y(${:02x}) to A", name(), value));
+  }
+#pragma endregion LOAD, STORE, TRANSFER
+
+#pragma region STACK
   void Instruction::Pha(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Php(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Pla(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Plp(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion STACK
+
+#pragma region INCREMENT, DECREMENT
+  void Instruction::Dec(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion INCREMENT, DECREMENT
+
+#pragma region ARITHMETIC
+  void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion ARITHMETIC
+
+#pragma region LOGICAL
+  void Instruction::And(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Eor(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ora(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion LOGICAL
+
+#pragma region SHIFT, ROTATE
+  void Instruction::Asl(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {
+    // if operating on A, write result to A
+    // if operating on address, write result to address
+  }
   void Instruction::Rol(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Ror(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Rti(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Rts(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion SHIFT, ROTATE
+
+#pragma region FLAG
+  void Instruction::Clc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cld(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cli(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Clv(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Sec(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Sed(const AddressMode &mode, CPU &cpu) const {}
   void Instruction::Sei(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sta(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Stx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sty(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Tax(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Tay(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Tsx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Txa(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Txs(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Tya(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion FLAG
+
+#pragma region COMPARISON
+  void Instruction::Cmp(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cpx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cpy(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion COMPARISON
+
+#pragma region BRANCHING
+  void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion BRANCHING
+
+#pragma region JUMPS
+  void Instruction::Jmp(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Jsr(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Rts(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion JUMPS
+
+#pragma region INTERRUPT
+  void Instruction::Brk(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Rti(const AddressMode &mode, CPU &cpu) const {}
+#pragma endregion INTERRUPT
+
+#pragma region OTHER
+  void Instruction::Bit(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Nop(const AddressMode &mode, CPU &cpu) const {
+    cpu.logger().log(std::format("--{} DID NOTHING (AS EXPECTED)", name()));
+  }
+#pragma endregion OTHER
 
   // clang-format off
   const Instruction Instruction::ADC{"ADC", &Instruction::Adc};
