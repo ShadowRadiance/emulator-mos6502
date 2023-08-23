@@ -12,6 +12,7 @@
 namespace mos6502 {
   class CPU
   {
+    friend class AddressMode;
     friend class Instruction;
 
   public:

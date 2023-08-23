@@ -22,7 +22,8 @@ namespace mos6502 {
     if (cycles > 10) {
       return false;
     }
-    logger_.log(std::format("Cycles {0}", cycles));
+    logger_.log(std::format("  Cycles: {0}", cycles));
+    logger_.log(std::format("  State: A:{:02x} X:{:02x} Y:{:02x} SP:{:02x} PC:{:04x} P:{:08b}", a, x, y, s, pc, p));
     return true;
   }
 
@@ -36,39 +37,39 @@ namespace mos6502 {
 
   uint8_t CPU::fetch_pc_byte() {
     uint8_t byte = read_byte(pc);
-    logger_.log(std::format("FETCHED {0} from {1}", byte, pc));
     increment_pc();
+    logger_.log(std::format("--FETCHED ${:02x} from ${:04x}", byte, pc));
     return byte;
   }
 
   uint16_t CPU::fetch_pc_word() {
     uint16_t word = read_word(pc);
-    logger_.log(std::format("FETCHED {0} from {1}", word, pc));
     increment_pc(2);
+    logger_.log(std::format("--FETCHED ${:04x} from ${:04x}", word, pc));
     return word;
   }
 
   void CPU::increment_pc(uint8_t n) {
     cycles++;
     pc += n;
-    logger_.log(std::format("INCR PC to {0} (1c)", pc));
+    logger_.log(std::format("INCR PC to ${:04x} (1c)", pc));
   }
 
   uint8_t CPU::read_byte(uint16_t address) {
     cycles++;
     uint8_t byte = mem_[address];
-    logger_.log(std::format("READ {0} from {1} (1c)", byte, address));
+    logger_.log(std::format("READ ${:02x} from ${:04x} (1c)", byte, address));
     return mem_[address];
   }
 
   void CPU::write_byte(uint16_t address, uint8_t byte) {
     cycles++;
     mem_[address] = byte;
-    logger_.log(std::format("WROTE {0} from {1} (1c)", byte, address));
+    logger_.log(std::format("WROTE ${:02x} to ${:04x} (1c)", byte, address));
   }
 
   uint16_t CPU::read_word(uint16_t address) {
-    logger_.log(std::format("READING WORD from {0}", address));
+    logger_.log(std::format("READING WORD from ${:04x}", address));
 
     uint16_t lo_byte = read_byte(address);
     uint16_t hi_byte = read_byte(address + 1);
@@ -80,7 +81,7 @@ namespace mos6502 {
   }
 
   void CPU::write_word(uint16_t address, uint16_t word) {
-    logger_.log(std::format("WRITING WORD to {0}", address));
+    logger_.log(std::format("WRITING WORD to ${:04x}", address));
 #if LITTLE_ENDIAN
     uint8_t lo_byte = word & 0xFF;
     uint8_t hi_byte = (word >> 8) & 0xFF;

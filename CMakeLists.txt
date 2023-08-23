@@ -7,8 +7,6 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB AddressModes src/mos6502/addressing/*.cpp)
-
 add_executable(Emu6502 src/main.cpp 
     src/application/logger.cpp
     src/application/ram.cpp
@@ -17,7 +15,6 @@ add_executable(Emu6502 src/main.cpp
     src/mos6502/operation.cpp
     src/mos6502/instruction.cpp
     src/mos6502/address_mode.cpp
-    ${AddressModes}
 )
 
 configure_file(src/version.h.in version.h)

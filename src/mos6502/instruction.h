@@ -11,13 +11,13 @@ namespace mos6502 {
   public:
     using MemFn = void (Instruction::*)(const AddressMode &addressMode, mos6502::CPU &cpu) const;
 
-    Instruction(std::string name, MemFn memfn);
-    std::string name() const;
+    Instruction(std::string_view name, MemFn memfn);
+    std::string_view name() const;
     bool operator==(const Instruction &other) const;
     void execute(const AddressMode &addressMode, mos6502::CPU &cpu) const;
 
   private:
-    std::string name_;
+    std::string_view name_;
     const MemFn memfn_;
 
     void Adc(const AddressMode &mode, mos6502::CPU &cpu) const;

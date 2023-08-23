@@ -6,9 +6,9 @@
 
 namespace mos6502 {
 
-  Instruction::Instruction(std::string name, MemFn memfn) : name_(name), memfn_(memfn) {}
+  Instruction::Instruction(std::string_view name, MemFn memfn) : name_(name), memfn_(memfn) {}
 
-  std::string Instruction::name() const {
+  std::string_view Instruction::name() const {
     return name_;
   }
 
@@ -16,70 +16,76 @@ namespace mos6502 {
     return &other == this;
   }
 
-  void Instruction::execute(const AddressMode &addressMode, mos6502::CPU &cpu) const {
-    cpu.logger().log(std::format("{} {}", name(), addressMode.code()));
+  void Instruction::execute(const AddressMode &addressMode, CPU &cpu) const {
+    cpu.logger().log(std::format("  Performing {} {}", name(), addressMode.code()));
     (this->*memfn_)(addressMode, cpu);
   }
 
-  void Instruction::Adc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::And(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Asl(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bcc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bcs(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Beq(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bit(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bmi(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bne(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bpl(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Brk(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bvc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Bvs(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Clc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Cld(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Cli(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Clv(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Cmp(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Cpx(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Cpy(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Dec(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Dex(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Dey(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Eor(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Inc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Inx(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Iny(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Jmp(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Jsr(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Lda(const AddressMode &mode, mos6502::CPU &cpu) const {
-    cpu.a = 0x42;
+  void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::And(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Asl(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bit(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Brk(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Clc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cld(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cli(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Clv(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cmp(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cpx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cpy(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dec(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Eor(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Jmp(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Jsr(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Lda(const AddressMode &mode, CPU &cpu) const {
+    uint8_t value = mode.value(cpu);
+    cpu.a = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+    cpu.logger().log(std::format("  Performed {} #${}", name(), value));
+    cpu.logger().log("");
   }
-  void Instruction::Ldx(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Ldy(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Lsr(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Nop(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Ora(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Pha(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Php(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Pla(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Plp(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Rol(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Ror(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Rti(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Rts(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sbc(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sec(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sed(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sei(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sta(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Stx(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Sty(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Tax(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Tay(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Tsx(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Txa(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Txs(const AddressMode &mode, mos6502::CPU &cpu) const {}
-  void Instruction::Tya(const AddressMode &mode, mos6502::CPU &cpu) const {}
+  void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Nop(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ora(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Pha(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Php(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Pla(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Plp(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Rol(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Ror(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Rti(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Rts(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sec(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sed(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sei(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sta(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Stx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Sty(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Tax(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Tay(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Tsx(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Txa(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Txs(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Tya(const AddressMode &mode, CPU &cpu) const {}
 
+  // clang-format off
   const Instruction Instruction::ADC{"ADC", &Instruction::Adc};
   const Instruction Instruction::AND{"AND", &Instruction::And};
   const Instruction Instruction::ASL{"ASL", &Instruction::Asl};
@@ -136,4 +142,6 @@ namespace mos6502 {
   const Instruction Instruction::TXA{"TXA", &Instruction::Txa};
   const Instruction Instruction::TXS{"TXS", &Instruction::Txs};
   const Instruction Instruction::TYA{"TYA", &Instruction::Tya};
+  // clang-format on
+
 }// namespace mos6502
