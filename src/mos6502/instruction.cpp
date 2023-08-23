@@ -116,10 +116,40 @@ namespace mos6502 {
 #pragma endregion LOAD, STORE, TRANSFER
 
 #pragma region STACK
-  void Instruction::Pha(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Php(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Pla(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Plp(const AddressMode &mode, CPU &cpu) const {}
+  /*
+  The stack is a 256-byte LIFO stack, spanning $0100-$01FF.
+  The stack pointer (S) starts at 0xFF.
+  When a byte is pushed onto the stack it will be placed at $0100+S. Then S will be decremented.
+  When a byte is popped from the stack, S will be incremented.
+  */
+  void Instruction::Pha(const AddressMode &mode, CPU &cpu) const {
+    // Push A
+    cpu.write_byte(StackBase + cpu.s, cpu.a);
+    cpu.s--;
+  }
+  void Instruction::Php(const AddressMode &mode, CPU &cpu) const {
+    // Push P (status)
+    uint8_t value = cpu.p;
+    value &= 0b00110000; // set bits 4 and 5
+    cpu.write_byte(StackBase + cpu.s, value);
+    cpu.s--;
+  }
+  void Instruction::Pla(const AddressMode &mode, CPU &cpu) const {
+    // Pull A
+    cpu.s++;
+    uint8_t value = cpu.read_byte(StackBase + cpu.s);
+    cpu.a = value;
+    cpu.n = value >> 7;
+    cpu.z = value == 0;
+  }
+  void Instruction::Plp(const AddressMode &mode, CPU &cpu) const {
+    // Pull P
+    cpu.s++;
+    uint8_t value = cpu.read_byte(StackBase + cpu.s);
+    uint8_t existing_b = cpu.b;
+    cpu.p = value;
+    cpu.b = existing_b;
+  }
 #pragma endregion STACK
 
 #pragma region INCREMENT, DECREMENT

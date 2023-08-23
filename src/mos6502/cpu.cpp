@@ -4,6 +4,10 @@
 #include <src/mos6502/instruction.h>
 
 namespace mos6502 {
+  const uint16_t NMIVector = 0xFFFA;    // - 0xFFFB
+  const uint16_t ResetVector = 0xFFFC;  // - 0xFFFD
+  const uint16_t IRQVector = 0xFFFE;    // - 0xFFFF
+
   CPU::CPU(application::RAM &mem, application::Logger &logger) : mem_(mem), logger_(logger) {
     reset();
   }
@@ -11,6 +15,7 @@ namespace mos6502 {
   void CPU::reset() {
     a = x = y = 0;
     s = 0xFF;
+    // TODO: PC should start at ResetVector, read 2B address (fffc,fffd), then JMP address
     pc = 0;
     p = 0b00100000;
   }
