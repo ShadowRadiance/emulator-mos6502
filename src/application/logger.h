@@ -1,13 +1,13 @@
 #pragma once
 
 #include <ostream>
-#include <src/emulator/logger.h>
+#include <string_view>
 
 namespace application {
-  class OStreamLogger : public emulator::Logger
+  class Logger
   {
   public:
-    OStreamLogger(std::ostream &out);
+    Logger(std::ostream &out);
     void log(std::string_view message);
 
   private:

@@ -8,15 +8,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 file(GLOB AddressModes src/mos6502/addressing/*.cpp)
-file(GLOB Operations src/mos6502/operations/*.cpp)
 
 add_executable(Emu6502 src/main.cpp 
-    src/application/ostream_logger.cpp
+    src/application/logger.cpp
     src/application/ram.cpp
     src/mos6502/cpu.cpp
-    src/mos6502/mos6502_opcode_decoder.cpp
+    src/mos6502/opcode_table.cpp
+    src/mos6502/operation.cpp
+    src/mos6502/instruction.cpp
+    src/mos6502/address_mode.cpp
     ${AddressModes}
-    ${Operations}
 )
 
 configure_file(src/version.h.in version.h)

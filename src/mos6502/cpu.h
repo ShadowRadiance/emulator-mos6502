@@ -3,22 +3,28 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <src/emulator/cpu.h>
-#include <src/emulator/logger.h>
-#include <src/emulator/memory.h>
+#include <src/application/logger.h>
+#include <src/application/ram.h>
+#include <src/mos6502/opcode_table.h>
+#include <src/mos6502/operation.h>
 #include <string>
 
 namespace mos6502 {
-  class CPU : public emulator::CPU
+  class CPU
   {
+    friend class Instruction;
+
   public:
-    CPU(emulator::WritableMemory &mem, emulator::Logger &logger);
+    CPU(application::RAM &mem, application::Logger &logger);
     void reset();
     bool tick();
+    application::Logger &logger() const;
+    application::RAM &memory() const;
 
   private:
-    emulator::WritableMemory &mem_;
-    emulator::Logger &logger_;
+    application::RAM &mem_;
+    application::Logger &logger_;
+    OpCodeTable opcode_table_;
 
     uint8_t a;   // Accumulator
     uint8_t x;   // General Purpose Register
@@ -54,12 +60,6 @@ namespace mos6502 {
 
     uint16_t read_word(uint16_t address);
     void write_word(uint16_t address, uint16_t word);
-
-    struct Operation
-    {
-      std::string instruction;
-      std::string addressMode;
-    };
 
     Operation decode(uint8_t opcode);
     Operation lookup_by_parser(uint8_t opcode);

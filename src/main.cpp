@@ -1,10 +1,10 @@
 #include <iostream>
-#include <src/application/ostream_logger.h>
+#include <src/application/logger.h>
 #include <src/application/ram.h>
 #include <src/mos6502/cpu.h>
 
 int main(int argc, char const *argv[]) {
-  application::OStreamLogger logger(std::cout);
+  application::Logger logger(std::cout);
   application::RAM ram;
   mos6502::CPU cpu(ram, logger);
 
