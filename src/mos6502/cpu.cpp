@@ -19,11 +19,12 @@ namespace mos6502 {
     Operation operation = opcode_table_.lookup(opcode);
     operation.execute(*this);
 
+    logger_.log(std::format("  Cycles: {0}", cycles));
+    logger_.log(std::format("  State: A:{:02x} X:{:02x} Y:{:02x} SP:{:02x} PC:{:04x} P:{:08b}", a, x, y, s, pc, p));
+
     if (cycles > 10) {
       return false;
     }
-    logger_.log(std::format("  Cycles: {0}", cycles));
-    logger_.log(std::format("  State: A:{:02x} X:{:02x} Y:{:02x} SP:{:02x} PC:{:04x} P:{:08b}", a, x, y, s, pc, p));
     return true;
   }
 
