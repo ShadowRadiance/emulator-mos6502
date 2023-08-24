@@ -215,7 +215,7 @@ namespace mos6502 {
 #pragma region ARITHMETIC
   void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {
     if (cpu.d == 1) {
-      throw std::logic_error("We haven't implemented ADC in BCD mode yet");
+      throw std::logic_error("We haven't implemented BCD mode");
     }
 
     // Add (mem) to A with Carry (prepare by CLC)
@@ -228,7 +228,7 @@ namespace mos6502 {
   }
   void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {
     if (cpu.d == 1) {
-      throw std::logic_error("We haven't implemented SBC in BCD mode yet");
+      throw std::logic_error("We haven't implemented BCD mode");
     }
 
     // Subtract (mem) from A with Borrow (prepare by SEC)
@@ -317,13 +317,28 @@ namespace mos6502 {
 #pragma endregion SHIFT, ROTATE
 
 #pragma region FLAG
-  void Instruction::Clc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cld(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cli(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Clv(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sec(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sed(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sei(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Clc(const AddressMode &mode, CPU &cpu) const {
+    cpu.c = 0;
+  }
+  void Instruction::Sec(const AddressMode &mode, CPU &cpu) const {
+    cpu.c = 1;
+  }
+  void Instruction::Cld(const AddressMode &mode, CPU &cpu) const {
+    cpu.d = 0;
+  }
+  void Instruction::Sed(const AddressMode &mode, CPU &cpu) const {
+    throw std::logic_error("We haven't implemented BCD mode");
+    // cpu.d = 1;
+  }
+  void Instruction::Cli(const AddressMode &mode, CPU &cpu) const {
+    cpu.i = 0;
+  }
+  void Instruction::Sei(const AddressMode &mode, CPU &cpu) const {
+    cpu.i = 1;
+  }
+  void Instruction::Clv(const AddressMode &mode, CPU &cpu) const {
+    cpu.v = 0;
+  }
 #pragma endregion FLAG
 
 #pragma region COMPARISON
