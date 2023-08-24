@@ -38,7 +38,7 @@ namespace mos6502 {
     set_z(cpu, value);
   }
 
-  void Instruction::set_c(CPU &cpu, uint16_t value_with_carry, uint8_t original_carry) const {
+  void Instruction::set_c(CPU &cpu, uint16_t value_with_carry) const {
     cpu.c = (value_with_carry & 0b1'0000'0000) >> 8;
   }
   void Instruction::set_n(CPU &cpu, uint8_t value) const {
@@ -222,7 +222,7 @@ namespace mos6502 {
     uint8_t add = mode.value(cpu);
     uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add) + cpu.c;
 
-    set_c(cpu, value_with_c, cpu.c);
+    set_c(cpu, value_with_c);
     set_v(cpu, value_with_c & 0xFF, cpu.a, add);
     set_a(cpu, value_with_c & 0xFF);
   }
@@ -236,7 +236,7 @@ namespace mos6502 {
     uint8_t add = sub ^ 0xFF;
     // (C<<8 & A) - SUB  ===  A + (SUB XOR ff) + C
     uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add) + cpu.c;
-    set_c(cpu, value_with_c, cpu.c);
+    set_c(cpu, value_with_c);
     set_v(cpu, value_with_c & 0xFF, cpu.a, add);
     set_a(cpu, value_with_c & 0xFF);
   }
@@ -342,20 +342,66 @@ namespace mos6502 {
 #pragma endregion FLAG
 
 #pragma region COMPARISON
-  void Instruction::Cmp(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cpx(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Cpy(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Cmp(const AddressMode &mode, CPU &cpu) const {
+    // Compare with A
+    uint8_t compare = cpu.a;
+    uint8_t value = mode.value(cpu);
+
+    uint8_t add = value ^ 0xFF;
+    uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add);
+    set_c(cpu, value_with_c);
+    set_n(cpu, value_with_c & 0xFF);
+    set_z(cpu, value_with_c & 0xFF);
+  }
+  void Instruction::Cpx(const AddressMode &mode, CPU &cpu) const {
+    // Compare with X
+    uint8_t compare = cpu.x;
+    uint8_t value = mode.value(cpu);
+
+    uint8_t add = value ^ 0xFF;
+    uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add);
+    set_c(cpu, value_with_c);
+    set_n(cpu, value_with_c & 0xFF);
+    set_z(cpu, value_with_c & 0xFF);
+  }
+  void Instruction::Cpy(const AddressMode &mode, CPU &cpu) const {
+    // Compare with Y
+    uint8_t compare = cpu.y;
+    uint8_t value = mode.value(cpu);
+
+    uint8_t add = value ^ 0xFF;
+    uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add);
+    set_c(cpu, value_with_c);
+    set_n(cpu, value_with_c & 0xFF);
+    set_z(cpu, value_with_c & 0xFF);
+  }
 #pragma endregion COMPARISON
 
 #pragma region BRANCHING
-  void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Carry Clear (all are relative mode only)
+  }
+  void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Carry Set (all are relative mode only)
+  }
+  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Equal (all are relative mode only)
+  }
+  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Minus (all are relative mode only)
+  }
+  void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Not Equal (all are relative mode only)
+  }
+  void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Plus (all are relative mode only)
+  }
+  void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Overflow Clear (all are relative mode only)
+  }
+  void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Overflow Set (all are relative mode only)
+  }
 #pragma endregion BRANCHING
 
 #pragma region JUMPS
