@@ -8,6 +8,10 @@
 namespace mos6502 {
   const uint16_t StackBase = 0x0100;
 
+  uint8_t bitN(uint16_t value, uint8_t n) {
+    return (value & uint16_t(1 << n)) >> n;
+  }
+
   Instruction::Instruction(std::string_view name, MemFn memfn) : name_(name), memfn_(memfn) {}
 
   std::string_view Instruction::name() const {
@@ -40,15 +44,15 @@ namespace mos6502 {
   }
 
   void Instruction::set_c(CPU &cpu, uint16_t value_with_carry) const {
-    cpu.c = (value_with_carry & 0b1'0000'0000) >> 8;
+    cpu.c = bitN(value_with_carry, 8);
   }
   void Instruction::set_n(CPU &cpu, uint8_t value) const {
-    cpu.n = (value & 0b1000'0000) >> 7;
+    cpu.n = bitN(value, 7);
   }
   void Instruction::set_v(CPU &cpu, uint8_t value, uint8_t op1, uint8_t op2) const {
-    uint8_t op1sgn = op1 >> 7;
-    uint8_t op2sgn = op2 >> 7;
-    uint8_t valsgn = value >> 7;
+    uint8_t op1sgn = bitN(op1, 7);
+    uint8_t op2sgn = bitN(op2, 7);
+    uint8_t valsgn = bitN(value, 7);
     cpu.v = ((op1sgn ^ ~op2sgn) & valsgn);
   }
   void Instruction::set_z(CPU &cpu, uint8_t value) const {
@@ -154,7 +158,7 @@ namespace mos6502 {
   void Instruction::Php(const AddressMode &mode, CPU &cpu) const {
     // Push P (status)
     uint8_t value = cpu.p;
-    value &= 0b00110000; // set bits 4 and 5
+    value |= 0b00110000; // set bits 4 and 5
     cpu.write_byte(StackBase + cpu.s, value);
     cpu.s--;
   }
@@ -162,9 +166,7 @@ namespace mos6502 {
     // Pull A
     cpu.s++;
     uint8_t value = cpu.read_byte(StackBase + cpu.s);
-    cpu.a = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_a(cpu, value);
   }
   void Instruction::Plp(const AddressMode &mode, CPU &cpu) const {
     // Pull P
@@ -183,8 +185,8 @@ namespace mos6502 {
     uint8_t value = cpu.read_byte(address);
     value--;
     cpu.write_byte(address, value);
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_n(cpu, value);
+    set_z(cpu, value);
   }
   void Instruction::Dex(const AddressMode &mode, CPU &cpu) const {
     // Decrement X by 1
@@ -204,8 +206,8 @@ namespace mos6502 {
     uint8_t value = cpu.read_byte(address);
     value++;
     cpu.write_byte(address, value);
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_n(cpu, value);
+    set_z(cpu, value);
   }
   void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {
     uint8_t value = cpu.x;
@@ -273,12 +275,12 @@ namespace mos6502 {
     if (mode == AddressMode::Accumulator) {
       uint8_t value = cpu.a;
       cpu.a = value << 1;
-      cpu.c = value >> 7;
+      cpu.c = bitN(value, 7);
     } else {
       uint16_t address = mode.address(cpu);
       uint8_t value = cpu.read_byte(address);
       cpu.write_byte(address, value << 1);
-      cpu.c = value >> 7;
+      cpu.c = bitN(value, 7);
     }
   }
   void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {
@@ -287,12 +289,12 @@ namespace mos6502 {
     if (mode == AddressMode::Accumulator) {
       uint8_t value = cpu.a;
       cpu.a = value >> 1;
-      cpu.c = value & 0x01;
+      cpu.c = bitN(value, 0);
     } else {
       uint16_t address = mode.address(cpu);
       uint8_t value = cpu.read_byte(address);
       cpu.write_byte(address, value >> 1);
-      cpu.c = value & 0x01;
+      cpu.c = bitN(value, 0);
     }
   }
   void Instruction::Rol(const AddressMode &mode, CPU &cpu) const {
@@ -300,12 +302,12 @@ namespace mos6502 {
     if (mode == AddressMode::Accumulator) {
       uint8_t value = cpu.a;
       cpu.a = (value << 1) | cpu.c;
-      cpu.c = value >> 7;
+      cpu.c = bitN(value, 7);
     } else {
       uint16_t address = mode.address(cpu);
       uint8_t value = cpu.read_byte(address);
       cpu.write_byte(address, (value << 1) | cpu.c);
-      cpu.c = value >> 7;
+      cpu.c = bitN(value, 7);
     }
   }
   void Instruction::Ror(const AddressMode &mode, CPU &cpu) const {
@@ -313,12 +315,12 @@ namespace mos6502 {
     if (mode == AddressMode::Accumulator) {
       uint8_t value = cpu.a;
       cpu.a = (value >> 1) | (cpu.c << 7);
-      cpu.c = value & 0x01;
+      cpu.c = bitN(value, 0);
     } else {
       uint16_t address = mode.address(cpu);
       uint8_t value = cpu.read_byte(address);
       cpu.write_byte(address, (value >> 1) | (cpu.c << 7));
-      cpu.c = value & 0x01;
+      cpu.c = bitN(value, 0);
     }
   }
 #pragma endregion SHIFT, ROTATE
@@ -471,12 +473,35 @@ namespace mos6502 {
 #pragma endregion JUMPS
 
 #pragma region INTERRUPT
-  void Instruction::Brk(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Rti(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Brk(const AddressMode &mode, CPU &cpu) const {
+    cpu.b = 1;
+    cpu.i = 1;
+  }
+  void Instruction::Rti(const AddressMode &mode, CPU &cpu) const {
+    // Return from Interrupt
+
+    // pop the P status register
+    cpu.s++;
+    cpu.p = cpu.read_byte(StackBase + cpu.s);
+
+    // pop PC
+    cpu.s++;
+    uint8_t lo_byte = cpu.read_byte(StackBase + cpu.s);
+    cpu.s++;
+    uint8_t hi_byte = cpu.read_byte(StackBase + cpu.s);
+    uint16_t address = (hi_byte << 8) | lo_byte;
+    cpu.pc = address;
+  }
 #pragma endregion INTERRUPT
 
 #pragma region OTHER
-  void Instruction::Bit(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Bit(const AddressMode &mode, CPU &cpu) const {
+    uint8_t value = mode.value(cpu);
+
+    set_z(cpu, value & cpu.a);
+    set_n(cpu, value);
+    cpu.v = bitN(value, 6);
+  }
   void Instruction::Nop(const AddressMode &mode, CPU &cpu) const {
     cpu.logger().log(std::format("--{} DID NOTHING (AS EXPECTED)", name()));
   }
