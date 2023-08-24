@@ -15,8 +15,7 @@ namespace mos6502 {
   void CPU::reset() {
     a = x = y = 0;
     s = 0xFF;
-    // TODO: PC should start at ResetVector, read 2B address (fffc,fffd), then JMP address
-    pc = 0;
+    pc = read_word(ResetVector);
     p = 0b00100000;
   }
 

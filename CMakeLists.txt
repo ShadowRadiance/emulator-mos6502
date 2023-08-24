@@ -15,6 +15,11 @@ add_executable(Emu6502 src/main.cpp
     src/mos6502/operation.cpp
     src/mos6502/instruction.cpp
     src/mos6502/address_mode.cpp
+    
+    src/system/test.cpp
+    # src/system/bbc.cpp
+    # src/system/electron.cpp
+    # src/system/nes.cpp
 )
 
 configure_file(src/version.h.in version.h)
