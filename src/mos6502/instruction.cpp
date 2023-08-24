@@ -261,13 +261,59 @@ namespace mos6502 {
 #pragma endregion LOGICAL
 
 #pragma region SHIFT, ROTATE
-  void Instruction::Asl(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {
-    // if operating on A, write result to A
-    // if operating on address, write result to address
+  void Instruction::Asl(const AddressMode &mode, CPU &cpu) const {
+    // 0bpqrs'tuvw,C => 0bqrst'uvw0,p
+    if (mode == AddressMode::Accumulator) {
+      uint8_t value = cpu.a;
+      cpu.a = value << 1;
+      cpu.c = value >> 7;
+    } else {
+      uint16_t address = mode.address(cpu);
+      uint8_t value = cpu.read_byte(address);
+      cpu.write_byte(address, value << 1);
+      cpu.c = value >> 7;
+    }
   }
-  void Instruction::Rol(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Ror(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Lsr(const AddressMode &mode, CPU &cpu) const {
+    // 0bpqrs'tuvw,C => 0b0pqr'stuv,w
+
+    if (mode == AddressMode::Accumulator) {
+      uint8_t value = cpu.a;
+      cpu.a = value >> 1;
+      cpu.c = value & 0x01;
+    } else {
+      uint16_t address = mode.address(cpu);
+      uint8_t value = cpu.read_byte(address);
+      cpu.write_byte(address, value >> 1);
+      cpu.c = value & 0x01;
+    }
+  }
+  void Instruction::Rol(const AddressMode &mode, CPU &cpu) const {
+    // 0bpqrs'tuvw,C => (0bqrst'uvw0 | 0b0000'000C),p => 0bqrst'uvwC,p
+    if (mode == AddressMode::Accumulator) {
+      uint8_t value = cpu.a;
+      cpu.a = (value << 1) | cpu.c;
+      cpu.c = value >> 7;
+    } else {
+      uint16_t address = mode.address(cpu);
+      uint8_t value = cpu.read_byte(address);
+      cpu.write_byte(address, (value << 1) | cpu.c);
+      cpu.c = value >> 7;
+    }
+  }
+  void Instruction::Ror(const AddressMode &mode, CPU &cpu) const {
+    // 0bpqrs'tuvw,C => (0b0pqr'stuv | 0bC000'0000),w => 0bCpqr'stuv,w
+    if (mode == AddressMode::Accumulator) {
+      uint8_t value = cpu.a;
+      cpu.a = (value >> 1) | (cpu.c << 7);
+      cpu.c = value & 0x01;
+    } else {
+      uint16_t address = mode.address(cpu);
+      uint8_t value = cpu.read_byte(address);
+      cpu.write_byte(address, (value >> 1) | (cpu.c << 7));
+      cpu.c = value & 0x01;
+    }
+  }
 #pragma endregion SHIFT, ROTATE
 
 #pragma region FLAG
