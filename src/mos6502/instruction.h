@@ -20,6 +20,15 @@ namespace mos6502 {
     std::string_view name_;
     const MemFn memfn_;
 
+    void set_a(CPU &cpu, uint8_t value) const;
+    void set_x(CPU &cpu, uint8_t value) const;
+    void set_y(CPU &cpu, uint8_t value) const;
+
+    void set_c(CPU &cpu, uint16_t value_with_carry, uint8_t original_carry) const;
+    void set_n(CPU &cpu, uint8_t value) const;
+    void set_v(CPU &cpu, uint8_t value, uint8_t op1, uint8_t op2) const;
+    void set_z(CPU &cpu, uint8_t value) const;
+
     void Adc(const AddressMode &mode, mos6502::CPU &cpu) const;
     void And(const AddressMode &mode, mos6502::CPU &cpu) const;
     void Asl(const AddressMode &mode, mos6502::CPU &cpu) const;

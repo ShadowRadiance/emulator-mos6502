@@ -70,7 +70,7 @@ ColumnLimit: 120
 # CommentPragmas: 
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 8
-ContinuationIndentWidth: 2
+ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat: false
@@ -119,7 +119,7 @@ PackConstructorInitializers: CurrentLine
 # PenaltyBreakTemplateDeclaration:
 # PenaltyExcessCharacter:
 # PenaltyIndentedWhitespace:
-# PenaltyReturnTypeOnItsOwnLine:
+PenaltyReturnTypeOnItsOwnLine: 1000
 PointerAlignment: Right
 QualifierAlignment: Leave
 # QualifierOrder:

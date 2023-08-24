@@ -22,29 +22,55 @@ namespace mos6502 {
     (this->*memfn_)(addressMode, cpu);
   }
 
+  void Instruction::set_a(CPU &cpu, uint8_t value) const {
+    cpu.a = value;
+    set_n(cpu, value);
+    set_z(cpu, value);
+  }
+  void Instruction::set_x(CPU &cpu, uint8_t value) const {
+    cpu.x = value;
+    set_n(cpu, value);
+    set_z(cpu, value);
+  }
+  void Instruction::set_y(CPU &cpu, uint8_t value) const {
+    cpu.y = value;
+    set_n(cpu, value);
+    set_z(cpu, value);
+  }
+
+  void Instruction::set_c(CPU &cpu, uint16_t value_with_carry, uint8_t original_carry) const {
+    cpu.c = (value_with_carry & 0b1'0000'0000) >> 8;
+  }
+  void Instruction::set_n(CPU &cpu, uint8_t value) const {
+    cpu.n = (value & 0b1000'0000) >> 7;
+  }
+  void Instruction::set_v(CPU &cpu, uint8_t value, uint8_t op1, uint8_t op2) const {
+    uint8_t op1sgn = op1 >> 7;
+    uint8_t op2sgn = op2 >> 7;
+    uint8_t valsgn = value >> 7;
+    cpu.v = ((op1sgn ^ ~op2sgn) & valsgn);
+  }
+  void Instruction::set_z(CPU &cpu, uint8_t value) const {
+    cpu.z = value == 0;
+  }
+
 #pragma region LOAD, STORE, TRANSFER
   void Instruction::Lda(const AddressMode &mode, CPU &cpu) const {
     // Load Value to A
     uint8_t value = mode.value(cpu);
-    cpu.a = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_a(cpu, value);
     cpu.logger().log(std::format("--{} WROTE ${:02x} to A register", name(), value));
   }
   void Instruction::Ldx(const AddressMode &mode, CPU &cpu) const {
     // Load Value to X
     uint8_t value = mode.value(cpu);
-    cpu.x = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_x(cpu, value);
     cpu.logger().log(std::format("--{} WROTE ${:02x} to X register", name(), value));
   }
   void Instruction::Ldy(const AddressMode &mode, CPU &cpu) const {
     // Load Value to Y
     uint8_t value = mode.value(cpu);
-    cpu.y = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_y(cpu, value);
     cpu.logger().log(std::format("--{} WROTE ${:02x} to Y register", name(), value));
   }
   void Instruction::Sta(const AddressMode &mode, CPU &cpu) const {
@@ -71,33 +97,25 @@ namespace mos6502 {
   void Instruction::Tax(const AddressMode &mode, CPU &cpu) const {
     // Transfer A to X
     uint8_t value = cpu.a;
-    cpu.x = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_x(cpu, value);
     cpu.logger().log(std::format("--{} WROTE A(${:02x}) to X", name(), value));
   }
   void Instruction::Tay(const AddressMode &mode, CPU &cpu) const {
     // Transfer A to Y
     uint8_t value = cpu.a;
-    cpu.y = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_y(cpu, value);
     cpu.logger().log(std::format("--{} WROTE A(${:02x}) to Y", name(), value));
   }
   void Instruction::Tsx(const AddressMode &mode, CPU &cpu) const {
     // Transfer S to X
     uint8_t value = cpu.s;
-    cpu.x = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_x(cpu, value);
     cpu.logger().log(std::format("--{} WROTE S(${:02x}) to X", name(), value));
   }
   void Instruction::Txa(const AddressMode &mode, CPU &cpu) const {
     // Transfer X to A
     uint8_t value = cpu.x;
-    cpu.a = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_a(cpu, value);
     cpu.logger().log(std::format("--{} WROTE X(${:02x}) to A", name(), value));
   }
   void Instruction::Txs(const AddressMode &mode, CPU &cpu) const {
@@ -109,9 +127,7 @@ namespace mos6502 {
   void Instruction::Tya(const AddressMode &mode, CPU &cpu) const {
     // Transfer Y to A
     uint8_t value = cpu.y;
-    cpu.a = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_a(cpu, value);
     cpu.logger().log(std::format("--{} WROTE Y(${:02x}) to A", name(), value));
   }
 #pragma endregion LOAD, STORE, TRANSFER
@@ -167,17 +183,13 @@ namespace mos6502 {
     // Decrement X by 1
     uint8_t value = cpu.x;
     value--;
-    cpu.x = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_x(cpu, value);
   }
   void Instruction::Dey(const AddressMode &mode, CPU &cpu) const {
     // Decrement Y by 1
     uint8_t value = cpu.y;
     value--;
-    cpu.y = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_y(cpu, value);
   }
   void Instruction::Inc(const AddressMode &mode, CPU &cpu) const {
     // Increment element at address by 1
@@ -191,22 +203,43 @@ namespace mos6502 {
   void Instruction::Inx(const AddressMode &mode, CPU &cpu) const {
     uint8_t value = cpu.x;
     value++;
-    cpu.x = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_x(cpu, value);
   }
   void Instruction::Iny(const AddressMode &mode, CPU &cpu) const {
     uint8_t value = cpu.y;
     value++;
-    cpu.y = value;
-    cpu.n = value >> 7;
-    cpu.z = value == 0;
+    set_y(cpu, value);
   }
 #pragma endregion INCREMENT, DECREMENT
 
 #pragma region ARITHMETIC
-  void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Adc(const AddressMode &mode, CPU &cpu) const {
+    if (cpu.d == 1) {
+      throw std::logic_error("We haven't implemented ADC in BCD mode yet");
+    }
+
+    // Add (mem) to A with Carry (prepare by CLC)
+    uint8_t add = mode.value(cpu);
+    uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add) + cpu.c;
+
+    set_c(cpu, value_with_c, cpu.c);
+    set_v(cpu, value_with_c & 0xFF, cpu.a, add);
+    set_a(cpu, value_with_c & 0xFF);
+  }
+  void Instruction::Sbc(const AddressMode &mode, CPU &cpu) const {
+    if (cpu.d == 1) {
+      throw std::logic_error("We haven't implemented SBC in BCD mode yet");
+    }
+
+    // Subtract (mem) from A with Borrow (prepare by SEC)
+    uint8_t sub = mode.value(cpu);
+    uint8_t add = sub ^ 0xFF;
+    // (C<<8 & A) - SUB  ===  A + (SUB XOR ff) + C
+    uint16_t value_with_c = uint16_t(cpu.a) + uint16_t(add) + cpu.c;
+    set_c(cpu, value_with_c, cpu.c);
+    set_v(cpu, value_with_c & 0xFF, cpu.a, add);
+    set_a(cpu, value_with_c & 0xFF);
+  }
 #pragma endregion ARITHMETIC
 
 #pragma region LOGICAL
