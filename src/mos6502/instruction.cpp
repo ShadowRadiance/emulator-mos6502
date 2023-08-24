@@ -243,9 +243,21 @@ namespace mos6502 {
 #pragma endregion ARITHMETIC
 
 #pragma region LOGICAL
-  void Instruction::And(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Eor(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Ora(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::And(const AddressMode &mode, CPU &cpu) const {
+    // Bitwise AND with Accumulator
+    uint8_t value = mode.value(cpu);
+    set_a(cpu, cpu.a & value);
+  }
+  void Instruction::Eor(const AddressMode &mode, CPU &cpu) const {
+    // Bitwise XOR with Accumulator
+    uint8_t value = mode.value(cpu);
+    set_a(cpu, cpu.a ^ value);
+  }
+  void Instruction::Ora(const AddressMode &mode, CPU &cpu) const {
+    // Bitwise OR with Accumulator
+    uint8_t value = mode.value(cpu);
+    set_a(cpu, cpu.a | value);
+  }
 #pragma endregion LOGICAL
 
 #pragma region SHIFT, ROTATE
