@@ -6,10 +6,10 @@
 namespace mos6502 {
 
   AddressMode::AddressMode(
-    std::string_view name,
-    std::string_view code,
-    ValueMemFn value_memfn,
-    AddressMemFn address_mem_fn)
+      std::string_view name,
+      std::string_view code,
+      ValueMemFn value_memfn,
+      AddressMemFn address_mem_fn)
           : name_(name)
           , code_(code)
           , value_memfn_(value_memfn)
@@ -76,7 +76,12 @@ namespace mos6502 {
   }
 
   uint16_t AddressMode::AbsoluteIndirectAddress(CPU &cpu) const {
-    return cpu.read_word(AbsoluteAddress(cpu));
+    uint16_t address = AbsoluteAddress(cpu);
+    if (address & 0xFF == 0xFF) {
+      throw std::runtime_error("an indirect jump must never use the a vector beginning on the last byte of a page");
+    }
+
+    return cpu.read_word(address);
   }
   uint16_t AddressMode::AbsoluteXAddress(CPU &cpu) const {
     return AbsoluteAddress(cpu) + cpu.x;

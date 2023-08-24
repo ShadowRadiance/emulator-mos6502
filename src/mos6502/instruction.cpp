@@ -3,6 +3,7 @@
 #include <format>
 #include <src/mos6502/address_mode.h>
 #include <src/mos6502/cpu.h>
+#include <stdexcept>
 
 namespace mos6502 {
   const uint16_t StackBase = 0x0100;
@@ -435,9 +436,38 @@ namespace mos6502 {
 #pragma endregion BRANCHING
 
 #pragma region JUMPS
-  void Instruction::Jmp(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Jsr(const AddressMode &mode, CPU &cpu) const {}
-  void Instruction::Rts(const AddressMode &mode, CPU &cpu) const {}
+  void Instruction::Jmp(const AddressMode &mode, CPU &cpu) const {
+    // Jump absolute or indirect to address
+    uint16_t address = mode.address(cpu);
+    cpu.pc = address;
+  }
+  void Instruction::Jsr(const AddressMode &mode, CPU &cpu) const {
+    // Jump to Subroutine
+    uint16_t address = mode.address(cpu);
+    uint16_t next_operation = cpu.pc;
+    // push address-1 onto stack
+    uint16_t byte_before_address = address - 1;
+    // push high byte
+    cpu.write_byte(StackBase + cpu.s, (byte_before_address >> 8));
+    cpu.s--;
+    // push low byte
+    cpu.write_byte(StackBase + cpu.s, (byte_before_address & 0xFF));
+    cpu.s--;
+
+    cpu.pc = address;
+  }
+  void Instruction::Rts(const AddressMode &mode, CPU &cpu) const {
+    // Return from Subroutine
+    // pop bytes from stack
+    cpu.s++;
+    uint8_t lo_byte = cpu.read_byte(StackBase + cpu.s);
+    cpu.s++;
+    uint8_t hi_byte = cpu.read_byte(StackBase + cpu.s);
+    uint16_t byte_before_address = (hi_byte << 8) | lo_byte;
+    uint16_t address = byte_before_address + 1;
+
+    cpu.pc = address;
+  }
 #pragma endregion JUMPS
 
 #pragma region INTERRUPT
