@@ -29,6 +29,8 @@ namespace mos6502 {
     void set_v(CPU &cpu, uint8_t value, uint8_t op1, uint8_t op2) const;
     void set_z(CPU &cpu, uint8_t value) const;
 
+    void branch(const AddressMode &mode, CPU &cpu) const;
+
     void Adc(const AddressMode &mode, mos6502::CPU &cpu) const;
     void And(const AddressMode &mode, mos6502::CPU &cpu) const;
     void Asl(const AddressMode &mode, mos6502::CPU &cpu) const;

@@ -54,6 +54,12 @@ namespace mos6502 {
     cpu.z = value == 0;
   }
 
+  void Instruction::branch(const AddressMode &mode, CPU &cpu) const {
+    int8_t offset = (int8_t)mode.value(cpu);
+    uint16_t address = cpu.pc + offset;
+    cpu.pc = address;
+  }
+
 #pragma region LOAD, STORE, TRANSFER
   void Instruction::Lda(const AddressMode &mode, CPU &cpu) const {
     // Load Value to A
@@ -379,28 +385,52 @@ namespace mos6502 {
 
 #pragma region BRANCHING
   void Instruction::Bcc(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Carry Clear (all are relative mode only)
+    // Branch on Carry Clear (all branch instructions are relative mode only)
+    if (cpu.c == 0) {
+      branch(mode, cpu);
+    }
   }
   void Instruction::Bcs(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Carry Set (all are relative mode only)
-  }
-  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Equal (all are relative mode only)
-  }
-  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Minus (all are relative mode only)
+    // Branch on Carry Set (all branch instructions are relative mode only)
+    if (cpu.c == 1) {
+      branch(mode, cpu);
+    }
   }
   void Instruction::Bne(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Not Equal (all are relative mode only)
+    // Branch on Not Equal (all branch instructions are relative mode only)
+    if (cpu.z == 0) {
+      branch(mode, cpu);
+    }
+  }
+  void Instruction::Beq(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Equal (all branch instructions are relative mode only)
+    if (cpu.z == 1) {
+      branch(mode, cpu);
+    }
   }
   void Instruction::Bpl(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Plus (all are relative mode only)
+    // Branch on Plus (all branch instructions are relative mode only)
+    if (cpu.n == 0) {
+      branch(mode, cpu);
+    }
+  }
+  void Instruction::Bmi(const AddressMode &mode, CPU &cpu) const {
+    // Branch on Minus (all branch instructions are relative mode only)
+    if (cpu.n == 1) {
+      branch(mode, cpu);
+    }
   }
   void Instruction::Bvc(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Overflow Clear (all are relative mode only)
+    // Branch on Overflow Clear (all branch instructions are relative mode only)
+    if (cpu.v == 0) {
+      branch(mode, cpu);
+    }
   }
   void Instruction::Bvs(const AddressMode &mode, CPU &cpu) const {
-    // Branch on Overflow Set (all are relative mode only)
+    // Branch on Overflow Set (all branch instructions are relative mode only)
+    if (cpu.v == 1) {
+      branch(mode, cpu);
+    }
   }
 #pragma endregion BRANCHING
 
