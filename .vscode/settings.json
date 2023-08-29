@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "/Users/megan/src/github.com/shadowradiance/emu6502/emu6502",
+    "cmake.sourceDirectory": "${workspaceFolder}",
     "files.associations": {
         "*.tailwind.css": "tailwindcss",
         "*.in": "plaintext",
